@@ -9,6 +9,14 @@
 </head>
 
 <body>
+
+    {%if request.user.is_authenticated%}
+    <p>{{request.user }}</p>
+    <a href="{% url 'logout' %}">logout</a>
+    {% else %}
+    <a href="{% url 'login' %}">login</a>
+    {%endif%}
+
     <h1>my todo list</h1>
     <a href="{% url 'create' %}">Add Task</a>
     <table border="2">
