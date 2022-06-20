@@ -17,8 +17,16 @@
     <a href="{% url 'login' %}">login</a>
     {%endif%}
 
+
+
+    <form action="" method="GET">
+        <input type="text" name="search-area" value="{{search_input}}">
+        <input type="submit" value="Search">
+    </form>
+
     <h1>my todo list</h1>
     <a href="{% url 'create' %}">Add Task</a>
+
     <table border="2">
         <tr>
             <th>items</th>
