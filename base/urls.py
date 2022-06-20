@@ -7,11 +7,13 @@ from .views import (
     TaskDelete,
     CustomloginView,
     CustomlogoutView,
+    RegisterPage,
 )
 
 urlpatterns = [
     path("login/", CustomloginView.as_view(), name="login"),
     path("logout/", CustomlogoutView.as_view(), name="logout"),
+    path("register/", RegisterPage.as_view(), name="register"),
     path("", TaskList.as_view(), name="tasks"),
     path("task/<int:pk>", TaskDetail.as_view(), name="task"),
     path("create/", TaskCreate.as_view(), name="create"),

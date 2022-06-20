@@ -5,20 +5,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Register</title>
 </head>
 
 <body>
-    <h3>Login Page</h3>
-    <form method="post">
+    <h3>Register</h3>
+    <form method="POST">
         {% csrf_token %}
-
         {{form.as_p}}
-
-        <input type="submit">
+        <input type="submit" value="Register">
     </form>
 
-    <p>Don't have a account ? <a href="{% url 'register' %}">Register</a></p>
+    <p>Already have an account? <a href="{% url 'login' %}">login </a></p>
 </body>
 
 </html>

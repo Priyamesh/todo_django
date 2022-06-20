@@ -1,12 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 from base.models import Task
 from .models import Task
@@ -29,9 +31,34 @@ class CustomlogoutView(LogoutView):
     next_page = "login"
 
 
+class RegisterPage(FormView):
+    template_name = "base/register.html"
+    form_class = UserCreationForm
+    redirect_authenticated_user = True
+    success_url = reverse_lazy("tasks")
+
+    def form_valid(self, form):
+        user = form.save()
+        if user is not None:
+            login(self.request, user)
+        return super().form_valid(form)
+
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect("tasks")
+        return super().get(*args, **kwargs)
+
+
 class TaskList(LoginRequiredMixin, ListView):
     model = Task
     context_object_name = "tasks"
+
+    # showing user specific data
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tasks"] = context["tasks"].filter(user=self.request.user)
+        context["count"] = context["tasks"].filter(completed=False).count()
+        return context
 
 
 class TaskDetail(LoginRequiredMixin, DetailView):
@@ -42,13 +69,18 @@ class TaskDetail(LoginRequiredMixin, DetailView):
 
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
-    fields = "__all__"
+    fields = {"title", "description", "completed"}
     success_url = reverse_lazy("tasks")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+        # return super(TaskCreate, self).form_valid(form)
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = "__all__"
+    fields = {"title", "description", "completed"}
     success_url = reverse_lazy("tasks")
 
 
